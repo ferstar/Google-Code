@@ -1,5 +1,0 @@
-#!/bin/bash
-
-source /etc/profile.d/sge.sh 
-/usr/lib64/nagios/plugins/check_sge_custom.py $@
-exit $?

@@ -1,6 +1,0 @@
--0.9.1-
-    Removed while loop that causes the program to run every five minutes
--0.9.0-
-    First finalized relase
-    Added sanity checking in input files (look for empty lines)
-

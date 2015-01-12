@@ -1,6 +1,0 @@
-#!/usr/bin/python
-
-from nagiosconfig import all_win_hosts
-for host in all_win_hosts:
-    print host
-

@@ -1,6 +1,0 @@
-#!/usr/bin/python
-
-from nagiosconfig import all_nix_hosts
-for host in all_nix_hosts:
-    print host
-
