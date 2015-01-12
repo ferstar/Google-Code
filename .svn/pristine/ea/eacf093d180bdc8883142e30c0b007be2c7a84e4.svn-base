@@ -1,0 +1,79 @@
+#0: resetting
+----------------
+ 
+#1: Starting args are -f stdStreams.txt parsing... 
+#2: reading in the file 
+#3: -file csiwall 233.17.33.212/50012 233.17.33.212/50112
+ -file rcconst 233.17.33.205/50002 233.17.33.205/50102
+
+...done reading file 
+#4: ...args parsed 
+#5: readinput read -file csiwall 233.17.33.212/50012 233.17.33.212/50112 as -file:csiwall:233.17.33.212/50012:233.17.33.212/50112 
+#6: read file new args are -file csiwall 233.17.33.212/50012 233.17.33.212/50112 
+#7: validating 
+#8: Invalid IP  going to next 
+#9: resetting
+----------------
+ 
+#10: Starting args are -file csiwall 233.17.33.212/50012 233.17.33.212/50112 parsing... 
+#11: ...args parsed 
+#12: readinput read -file rcconst 233.17.33.205/50002 233.17.33.205/50102 as -file:rcconst:233.17.33.205/50002:233.17.33.205/50102 
+#13: read file new args are -file rcconst 233.17.33.205/50002 233.17.33.205/50102 
+#14: validating 
+#15: ip 233.17.33.212 ok 
+#16: dip 233.17.33.212 ok 
+#17: port 50012 ok 
+#18: dport 50112 ok 
+#19: done validating 
+#20: validated 
+#21: generating sdp file 
+#22: made sdp file v=0
+	o=- 1344012451 1344012451 IN IP4 RC-/
+	s=RC-1344012451
+	i=N/A
+	c=IN IP4 233.17.33.212/255
+	t=0 0
+	m=video 50112 RTP 96
+	b=AS:500
+	a=rtpmap:96 H264/90000
+	 
+#23: writing to file /mnt/icelab-videos/live/.csiwall.sdp 
+#24: done closed /mnt/icelab-videos/live/.csiwall.sdp 
+#25: wrote sdp file 
+#26: going to run ssh user@pelican-00.rit.edu /home/user/gst-transcode-rtp-h264.sh -sip 233.17.33.212 -dip 233.17.33.212 -sport 50012 -dport 50112 -name RC-/ 1>/dev/null &  
+#27: transcoded 
+#28: done with run 
+-----------------
+ 
+#29: resetting
+----------------
+ 
+#30: Starting args are -file rcconst 233.17.33.205/50002 233.17.33.205/50102 parsing... 
+#31: ...args parsed 
+#32: read file new args are  
+#33: validating 
+#34: ip 233.17.33.205 ok 
+#35: dip 233.17.33.205 ok 
+#36: port 50002 ok 
+#37: dport 50102 ok 
+#38: done validating 
+#39: validated 
+#40: generating sdp file 
+#41: made sdp file v=0
+	o=- 1344012452 1344012452 IN IP4 RC-/
+	s=RC-1344012452
+	i=N/A
+	c=IN IP4 233.17.33.205/255
+	t=0 0
+	m=video 50102 RTP 96
+	b=AS:500
+	a=rtpmap:96 H264/90000
+	 
+#42: writing to file /mnt/icelab-videos/live/.rcconst.sdp 
+#43: done closed /mnt/icelab-videos/live/.rcconst.sdp 
+#44: wrote sdp file 
+#45: going to run ssh user@pelican-00.rit.edu /home/user/gst-transcode-rtp-h264.sh -sip 233.17.33.205 -dip 233.17.33.205 -sport 50002 -dport 50102 -name RC-/ 1>/dev/null &  
+#46: transcoded 
+#47: done with run 
+-----------------
+ 

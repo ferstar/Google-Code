@@ -1,0 +1,60 @@
+<link rel="stylesheet" type="text/css" href="jquery.confirm/jquery.confirm.css" />
+<script src="jquery.confirm/jquery.confirm.js"></script>
+
+<script type="text/javascript">
+        $(document).ready(function() { 
+                $("#dialog").dialog({
+                        autoOpen: false,
+                        resizable: false,
+                        height:200,
+                        width:600,
+                        modal: true,
+                        close: function() {
+                                $('#opener').removeClass('ui-state-focus');
+                        },
+                        buttons: {
+                                "Delete selected items": function() {
+                                        //$.get('/del', $("#files").serialize());
+                                        document.deleteBox.submit();
+                                },
+                                Cancel: function() {
+                                        $( this ).dialog( "close" );
+                                }
+                        },
+                        open: function(event, ui) { $(".ui-dialog-titlebar-close").hide();},
+                 });
+                 $('form #confirm').click(function(e) {
+                        $('#dialog').dialog('open');
+                 });
+                 $('#opener').click(function () {
+                        $('.dialog').dialog('open');
+                        $(this).button('refresh');
+                        return false;
+                });
+                $('#confirm').button();
+                $('#confirm').click(function() {return false;});
+                return false;
+        });
+</script>
+
+
+<h2>Schedule of Events</h2>
+<br/>
+<form name="deleteBox" id="deleteBox" method="POST" action="delete">
+  <table style="border: none;" border="1">
+        <tr>
+                <th>Delete</th>
+                <th>Time to play</th>
+                <th>Filename</th>
+        </tr>
+        <% files %>
+  </table>
+  <br/>
+  <div id="confirm" name="confirm" value="submit" type="submit">Delete Selected Files</div>
+</form>
+<div style="display:none" id="dialog" name="dialog" title="Confirm Delete">
+        <p>
+                <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+                These items will be permanently deleted and cannot be recovered. Are you sure?
+        </p>
+</div>

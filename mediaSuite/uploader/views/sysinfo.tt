@@ -1,0 +1,28 @@
+<script type="text/javascript">
+        $(function () {
+                $('p.but').button();
+                $('p.but#res').click(function(){$.post('/exit/0x2');});
+                $('p.but#stop').click(function(){$.post('/exit/0x0');});
+                $('p.but#killall').click(function(){$.post('/exit/0x4');});
+        });
+</script>
+
+<h2>System Information</h2>
+<div class="info">
+        <p>
+                <span>Hostname: <% hostname %></span><br/>
+                <span>Uptime: <% uptime %></span><br/>
+                <span>System load: <% load %> </span><br/>
+                <span>MediaSuite uptime: <%dance%></span><br/>
+        </p>
+</div>
+<br/>
+<hr/>
+<br/>
+<div class="admin">
+        <h4>Perform administrative actions</h4>
+        <p> These options should only be used in determining issues with the service. Note that exit requires console access to the node to start again. Activities below monitor calling IP addresses to check for abuse</p><br/>
+        <span style="text-align:center;margin-left:auto;margin-right:auto;"><p class="but" id="stop">Shutdown mediaSuite</p>
+        <p class="but" id="res" >Restart mediaSuite</p></span>
+        <p class="but" id="killall">Kill <strong>ALL</strong> Child Processes</p>
+</div>

@@ -1,0 +1,37 @@
+#!/bin/bash -x
+
+PRIMARY=lovelace
+
+if [[ $EUID != 0 ]]; then
+   echo "This script must be run as root" 1>&2
+   exit 1
+fi
+
+if [[ `hostname` -ne $PRIMARY ]]; then
+   echo "This script must be run on the primary nagios instance: $PRIMARY"
+   exit 2
+fi
+
+echo "Removing host and service definitions on $PRIMARY."
+/bin/rm /etc/nagios3/objects/hosts/*
+echo
+
+echo "Regenerating host and service definitions on $PRIMARY."
+/root/nagios/localutils/make-all-host-templates.sh
+echo
+
+echo "Changing owner of all in /etc/nagios3 to 'nagios:nagios'."
+chown -R nagios:nagios /etc/nagios3
+echo
+
+logger "Restaring nagios on $PRIMARY."
+echo "Restarting nagios on $PRIMARY."
+/usr/bin/killall nagios3;
+sleep 2
+/usr/sbin/service nagios3 start;
+echo "Restarting nrpe on $PRIMARY."
+/usr/bin/killall nrpe ;
+sleep 2
+/usr/sbin/service nagios-nrpe-server start;
+
+

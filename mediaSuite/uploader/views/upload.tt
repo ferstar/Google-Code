@@ -1,0 +1,103 @@
+<link rel="stylesheet" href="css/dark-hive/darkhive.css" type="text/css" media="screen"/>
+<script src="js/jquery-1.6.2.min.js"></script>
+<script src="js/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript">
+    function waitBox() {
+        $("#dialog-modal").dialog({
+            height: 150,
+            width: 500,
+            buttons: {},
+            closeOnEscape: false,
+            modal: true,
+            open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); }
+        });
+        return false;
+    };
+    $(function() {
+        $( "#accordion" ).accordion({
+                autoHeight: false,
+        });
+    });
+</script>
+<script type="text/javascript">
+//var _validFileExtensions = [".zip"];
+
+function Validate(oForm, _validFileExtensions) {
+    var arrInputs = oForm.getElementsByTagName("input");
+    for (var i = 0; i < arrInputs.length; i++) {
+        var oInput = arrInputs[i];
+        if (oInput.type == "file") {
+            var sFileName = oInput.value;
+            if (sFileName.length > 0) {
+                var blnValid = false;
+                for (var j = 0; j < _validFileExtensions.length; j++) {
+                    var sCurExtension = _validFileExtensions[j];
+                    if (sFileName.substr(sFileName.length - sCurExtension.length, sCurExtension.length).toLowerCase() == sCurExtension.toLowerCase()) {
+                        blnValid = true;
+                        waitBox();
+                        break;
+                    }
+                }
+
+                if (!blnValid) {
+                    alert("Sorry, " + sFileName + " is invalid, allowed extensions are: " + _validFileExtensions.join(", "));
+                    return false;
+                }
+            }
+        }
+    }
+
+    return true;
+}
+</script>
+
+<h3 class="title">Media Uploader Page</h3>
+<p class="title_info">Use this page to upload new material for your node</p>
+
+<% IF err %><% END %>
+
+<hr>
+
+<div id="accordion">
+    <h3><a href="#">Videos</a></h3>
+    <div>
+        <form name="mediaInput" action="./upload" method="POST" enctype="multipart/form-data">
+            File to Upload: <input type="file" accept="audio/*|video/*" size=50 name="uploadFile"/><br/>
+            Time to play daily: <input type="text" size=2 name="startHour"/>:<input type="text" size=2 name="startMinute"/><br/>
+            <input type="hidden" name="media" value="1"><!-- Will tell backend that this is a media file-->
+            <input type="submit" onclick="return Validate(this, ['.mkv', '.avi', '.m4a', '.mov'])" name="submit" value="Submit"/><br/>
+        </form>
+    </div>
+    <h3><a href="#">Powerpoint Shows and Images</a></h3>
+    <div>
+        <p>Use this panel to upload Powerpoint shows and image slideshows to the device. Save your show as images (found in the 'Save as type:' dropdown in the save menu) and place them into a zip folder. Upload the zip folder and adjust the settings below to taste.</p>
+        <br/>
+        <form name="input" action="./upload" method="POST" enctype="multipart/form-data">
+            File to Upload: <input type="file" accept="zip" size=50 name="uploadFile"/><br/>
+            Time file will begin playing today: <input type="text" size=2 name="startHour"/>:<input type="text" size=2 name="startMinute"/><br/>
+            Time delay between RC display and media: <input type="text" readonly="readonly" size="2" value="00"/> : <input type="text" size=2 name="delayMinute"/><br/>
+            <input type="hidden" name="media" value="0"><!-- Will tell backend that this is a ppt show-->
+            <input type="submit" onclick="return Validate(this, ['.zip'])" name="submit" value="Submit"/><br/>
+        </form>
+    </div>
+    <h3><a href="#">Single Image</a></h3>
+    <div>
+        <p> Use this panel to upload a single image that will be displayed periodically. This is best used for single image advertisements
+        <form name="adInput" action="./upload" method="POST" enctype="multipart/form-data">
+                Image: <input type="file" accept="IMAGE" size=50 name="uploadFile"><br/>
+                Image plays for: <input type="text" size=2 name="delayMinute"> minutes <br/>
+                <input type="hidden" name="media" value="2"><!-- Will tell backend that this is an image for ads-->
+                <input type="submit" onclick="return Validate(this, ['.png', '.jpeg', '.jpg', '.gif'])" name="submit" value="Submit"/><br/>
+        </form>
+    </div>
+    <h3><a href="#">Website</a></h3>
+    <div>
+        <p> Use this panel to run a single website in rotation with the grid</p>
+        <form name="website" action="./websubmit" method="POST" enctype="multipart/form-data">
+                Website: <input type="text" name="website"> <br/>
+
+</div>
+<div style="display:none; text-align:center;" id="dialog-modal" title="Upload in Progress">
+    <p>Please wait while your file is uploaded to your node</p>
+    <img style="text-align:center;" src="/images/throbber.gif" alt="throbber"/>
+</div>

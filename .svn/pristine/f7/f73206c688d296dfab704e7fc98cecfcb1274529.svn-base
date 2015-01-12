@@ -1,0 +1,22 @@
+!SESSION 2012-07-24 12:54:03.860 -----------------------------------------------
+eclipse.buildId=M20100211-1343
+java.version=1.6.0_20
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=linux, ARCH=x86, WS=gtk, NL=en_US
+Command-line arguments:  -os linux -ws gtk -arch x86
+
+!ENTRY org.python.pydev.core 4 4 2012-07-24 12:54:52.397
+!MESSAGE Python not configured.
+!STACK 0
+org.python.pydev.core.NotConfiguredInterpreterException: Python not configured.
+	at org.python.pydev.ui.interpreters.AbstractInterpreterManager.getDefaultInterpreterInfo(AbstractInterpreterManager.java:231)
+	at org.python.pydev.plugin.nature.PythonNature.getProjectInterpreter(PythonNature.java:1200)
+	at org.python.pydev.plugin.nature.PythonPathNature.getVariableSubstitution(PythonPathNature.java:484)
+	at org.python.pydev.plugin.nature.PythonPathNature.getVariableSubstitution(PythonPathNature.java:469)
+	at org.python.pydev.core.docutils.StringSubstitution.<init>(StringSubstitution.java:35)
+	at org.python.pydev.plugin.nature.PythonPathNature.getOnlyProjectPythonPathStr(PythonPathNature.java:168)
+	at org.python.pydev.plugin.nature.PythonNature$RebuildPythonNatureModules.run(PythonNature.java:137)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+
+!ENTRY org.python.pydev.core 4 4 2012-07-24 12:54:52.492
+!MESSAGE Info: Rebuilding internal caches: /home/user/stuff/collaborationgrid/.metadata/.plugins/org.eclipse.core.resources/.projects/rcScripts/com.python.pydev.analysis/AdditionalProjectInterpreterInfo.pydevinfo (Expected error to be provided and got no error!)

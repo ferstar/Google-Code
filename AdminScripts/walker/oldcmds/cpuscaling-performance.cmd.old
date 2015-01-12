@@ -1,0 +1,11 @@
+apt-get -y install cpufrequtils sysfsutils
+echo performance | tee /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+echo performance | tee /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor
+echo performance | tee /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor
+echo performance | tee /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor
+echo "devices/system/cpu/cpu0/cpufreq/scaling_governor = performance" >> /etc/sysfs.conf
+echo "devices/system/cpu/cpu1/cpufreq/scaling_governor = performance" >> /etc/sysfs.conf
+echo "devices/system/cpu/cpu2/cpufreq/scaling_governor = performance" >> /etc/sysfs.conf
+echo "devices/system/cpu/cpu3/cpufreq/scaling_governor = performance" >> /etc/sysfs.conf
+
+sed -i 's/^GOVERNOR="ondemand"/GOVERNOR="performance"/g' /etc/init.d/cpufrequtils

@@ -1,0 +1,3 @@
+<form action="./cmd" method="POST">
+    <input type="text" name="cmd">
+</form>

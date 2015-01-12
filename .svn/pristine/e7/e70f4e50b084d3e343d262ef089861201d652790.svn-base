@@ -1,0 +1,10 @@
+#!/bin/bash
+
+hostsloc=/root/nagios/hosts-lists
+location=/root/nagios/nrpe-distribution-jams
+echo "Getting all the fresh jams from /root/nagios/localutils"
+cp /root/nagios/localutils/files-for-hosts/* $location/nrpe-files/.
+
+cat $location/nrpe-files/nrpe-host.cfg | sed 's/lib64/lib/g' > $location/nrpe-files/nrpe-host-i686.cfg
+cat $location/nrpe-files/nrpe-host.cfg > $location/nrpe-files/nrpe-host-x86_64.cfg
+

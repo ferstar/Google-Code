@@ -1,0 +1,83 @@
+#!/usr/bin/python
+
+# Used to create objects in objects/hosts
+import sys
+
+if len(sys.argv) != 2:
+	print "must use make-host-template.py <host>"
+host = sys.argv[1]
+
+
+print """
+define host{
+	use			rc-windows-server
+	host_name		%s
+	alias			%s
+	address			%s
+}""" % tuple([host]*3)
+print """
+define hostextinfo{
+        host_name     	%s 
+        icon_image      base/redhat.jpg
+        icon_image_alt  Server
+}""" % host
+
+###############################################################################
+###############################################################################
+#
+# SERVICE DEFINITIONS
+#
+###############################################################################
+###############################################################################
+
+#
+# TODO -- need here a central list of all hosts and all services
+# that will be used to:
+#  1) make the local host files
+#  2) deploy custom nrpe.cfg files to all hosts
+#
+
+ping_defaults = [100.0, "20%", 500.0, "60%"]
+ping_parms = {}
+print """
+define service{
+        use                             remote-service
+        host_name                       %s
+        service_description             PING
+        check_command                   check_ping!%f,%s!%f,%s
+}""" % tuple([host] + ping_parms.get(host, ping_defaults)) 
+
+
+print """
+define service{
+        use                             remote-service
+        host_name                       %s
+        service_description             RAT Service
+        check_command                   check_nrpe_no_args!check_rat
+}""" % host
+print """
+define service{
+        use                             remote-service
+        host_name                       %s
+        service_description             DVTS Service
+        check_command                   check_nrpe_no_args!check_dvts
+}""" % host
+print """
+define service{
+        use                             remote-service
+        host_name                       %s
+        service_description             VIC Service
+        check_command                   check_nrpe_no_args!check_vic
+}""" % host
+print """
+define service{
+        use                             remote-service
+        host_name                       %s
+        service_description             AG Service
+        check_command                   check_nrpe_no_args!check_ag
+}""" % host
+			
+
+
+
+

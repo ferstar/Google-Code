@@ -1,0 +1,2 @@
+# Disallow users to be able to list the contents of this directory
+deny from all

@@ -1,0 +1,38 @@
+# Created January 2012 by Stephen Repetski
+#
+# This data file is used in order to give the bridge server information
+# of what IP addresses and ports to use for the multicast and unicast
+# side of the bridge streams. The data in here should be tab delineated
+# otherwisee it won't necessarily work properly.
+#
+# The "Short Name" should be a single word, as this will become the name
+# of the screen that gets started when the script is run
+#
+# Multicast IP	#Multicast Port	# Unicast IP	# Short Name	# Description
+
+233.17.33.240	50040	48040	carey		# Carey Lab
+233.17.33.242	50042	48042	gccis-ntid	# GCCIS NTID Lab
+233.17.33.246	50046	48046	videowall	# NTID Video Wall
+233.17.33.248	50048	48048	gallaudet	# Gallaudet
+
+#233.17.33.246	50014		48014		hd1		# Some stream
+233.17.33.224	50024	48024	biomed		# Biomedical Imaging Sciences
+#233.17.33.250	50050		48050		hd3		# HD stream
+#233.17.33.252	50052		48052		hd4		# HD stream other
+
+224.2.224.225	20002	48002	main-venue	# Main RIT AccessGrid/grav Venue
+
+233.17.33.232	50032	48032	smfl
+233.17.33.212	50012	48012	cis
+233.17.33.230	50030	48030	gv
+233.17.33.234	50034	48034	rpl
+
+224.2.222.105	63786	48006	croatia-vid	
+224.2.139.124	63586	48008	croatia-aud
+
+224.2.184.113	59120	48020	ntid-venue
+
+224.2.243.48	52850	48050	RIT-Conf-Venue-Video
+224.2.228.67	64662	48062	RIT-Conf-Venue-Audio
+
+233.17.33.252	50052	48052	Gallaudet-2

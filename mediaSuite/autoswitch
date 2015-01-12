@@ -1,0 +1,40 @@
+#!/bin/bash
+#script to switch between grav and odp and back
+export DISPLAY=:0
+flip=0
+
+#switch to grav
+function grav {
+	local windowID=`wmctrl -l | grep grav | awk '{ if ( $4 ~/^grav$/ && !($5 ~ /menu/)) print $1 }'`
+	local width=`wmctrl -d | awk 'NR==1{print $9}'| awk -F'x' '{print $1}'`
+	local height=`wmctrl -d | awk 'NR==1{print $9}' | awk -F'x' '{print $2}'`
+
+	wmctrl -i -r $windowID -e 0,-1,-1,$width,$height
+	wmctrl -i -a $windowID
+}
+
+
+#switch to running ppt
+function ppt {
+	local windowID=`wmctrl -l | awk '{ if ( $4 ~/^OpenOffice.org$/) print $1 }'`
+	local width=`wmctrl -d | awk 'NR==1{print $9}'| awk -F'x' '{print $1}'`
+	local height=`wmctrl -d | awk 'NR==1{print $9}' | awk -F'x' '{print $2}'`
+
+	wmctrl -i -r $windowID -e 0,-1,-1,$width,$height
+	wmctrl -i -a $windowID
+}
+
+
+while [ 0 ]; do
+
+	if [ $flip = "0" ]
+	then
+		grav
+		sleep 15m
+		flip=1
+	else 
+		ppt
+		sleep 5m
+		flip=0
+	fi
+done

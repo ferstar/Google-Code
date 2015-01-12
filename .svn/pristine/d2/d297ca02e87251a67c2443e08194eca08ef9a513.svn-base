@@ -1,0 +1,27 @@
+#!/bin/bash
+
+NAGIOS=/etc/nagios3
+UTILS=/root/nagios/localutils
+
+rm -rf $NAGIOS/objects/hosts/*
+
+for i in `$UTILS/get-list-of-unix-hosts.py` ; do
+    echo "Rebuilding nix host: $i"
+	HFILE=$NAGIOS/objects/hosts/host-$i-base.cfg;
+	$UTILS/make-host-template.py $i > $HFILE;
+	/bin/chown nagios:nagios $HFILE;
+	/bin/chmod o-r $HFILE;
+done
+for i in `$UTILS/get-list-of-windows-hosts.py` ; do
+    echo "Rebuilding win host: $i"
+	HFILE=$NAGIOS/objects/hosts/host-$i-base.cfg;
+	$UTILS/make-host-template.py $i > $HFILE;
+	/bin/chown nagios:nagios $HFILE;
+	/bin/chmod o-r $HFILE;
+done
+
+HFILE=$NAGIOS/objects/hostgroups.cfg
+$UTILS/make-hostgroups.py > $HFILE;
+/bin/chown nagios:nagios $HFILE;
+/bin/chmod o-r $HFILE;
+

@@ -1,0 +1,61 @@
+#!/bin/bash
+
+if [[ $# -ne 4 ]] ; then 
+   echo "check_mem_custom -w <warning> -c <critical>"
+   exit 3
+fi
+
+W=$2 # bad coding here -- i don't care.
+C=$4 # we don't actually check for -w and -c
+
+# all good after this
+# Number of unique users
+NUM_U=`who | awk ' { print $1 } ' | sort | uniq | wc -l`
+VAR="";
+BIGGEST=0;
+BIGGEST_U="(none)";
+
+excluded=(apache dbus ganglia haldaemon ldap nrpe nscd ntp postfix rpc rpcuser USER root nagios exim helper sge xfs avahi condor 68 UID sshd daemon slurm munge mysql)
+
+for i in `ps -eo user | sort | uniq` ; do
+	exclude=1;
+	for excl in "${excluded[@]}"; do
+		if [ "$i" == "$excl" ] ; then
+			exclude=0;
+		fi
+	done
+	
+	if [ $exclude -eq 0 ] ; then
+		continue
+	fi
+	
+	tot=0;
+	for entry in `ps -eo pid,user,pcpu,rss | grep $i | awk ' { print $4} '` ; do 
+		tot=`echo $tot + $entry | bc`;
+	done ;
+
+	tot=`echo "$tot / 1048576.0" | bc`.`echo "$tot % 1048576.0 / 1" | bc`
+    if [[ 1 -ne `echo "$tot == 0.0" | bc` ]] ; then
+        if [[ 1 -eq `echo "$tot >= $BIGGEST" | bc` ]] ; then
+			BIGGEST=$tot;
+			BIGGEST_U=$i;
+		fi;
+		
+		VAR="$VAR:$i,$tot";
+	fi
+done;
+VAR=`echo $VAR | cut -b 2-`
+
+
+if [ 1 -eq `echo "$BIGGEST < $W" | bc` ] ; then
+    echo "MEM_CUSTOM OK - ($BIGGEST_U consumes the most mem(GB): $BIGGEST)|$VAR"
+    exit 0
+fi
+if [ 1 -eq `echo "$BIGGEST < $C" | bc` ] ; then
+    echo "MEM_CUSTOM WARN - ($BIGGEST_U consumes the most mem(GB): $BIGGEST)|$VAR"
+    exit 1
+fi
+  
+echo "MEM_CUSTOM CRIT - ($BIGGEST_U consumes the most mem(GB): $BIGGEST)|$VAR"
+exit 2
+

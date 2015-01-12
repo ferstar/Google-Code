@@ -1,0 +1,4 @@
+This is a tool used to distribute nrpe config files and scripts from jay
+to all monitored hosts.
+
+Use get-and-distribute-nrpe-jams as top level script to distribute ../../localutils/filestohost 

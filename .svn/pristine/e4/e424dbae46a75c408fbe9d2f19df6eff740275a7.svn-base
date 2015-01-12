@@ -1,0 +1,8 @@
+<h2>Licenses and Programs Used</h2>
+<p>
+        <ul>
+        <li> Web interface written using <a href="http://perldancer.org">PerlDancer</a>, a module found in CPAN. PerlDancer runs off of the Perl scripting language and shares the same licensing concerns. Perl is licensed under <a href="http://dev.perl.org/licenses/gpl1.html">GNU General Public License</a> version 1 and later. Perl is also tolerant of the <a href="http://dev.perl.org/licenses/artistic.html">Artistic License</a>. </li>
+        <li> The font used for the MediaSuite logo is 'Imaki Oblique' and was downloaded from <a href="http://www.dafont.com/imaki.font?fpp=50&psize=s&l[]=10&l[]=1">dafont.com</a>. It is released as 'free' use. </li>
+        <li> The <a href="http://jquery.org/license/">jQuery</a> components used in this application come from jQuery internals only. The project has authorized the use of <a href="https://github.com/jquery/jquery/blob/master/MIT-LICENSE.txt">MIT license</a> and <a href="http://www.gnu.org/copyleft/gpl.html">GPL</a>. Comerical release of jQuery elements is permitted provided the jQuery copyright header is left as shipped.</li>
+        </ul>
+</p>

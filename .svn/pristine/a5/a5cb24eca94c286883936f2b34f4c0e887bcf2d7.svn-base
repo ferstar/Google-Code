@@ -1,0 +1,45 @@
+#!/usr/bin/env python
+
+import libvirt
+import sys
+import os
+import shutil
+import syslog
+
+# Nagios codes
+OK, WARN, CRIT, UNKNOWN = 0, 1, 2, 3
+script = __file__
+
+if len(sys.argv) != 2:
+    print "Usage: {script} <guest_name>".format(**locals())
+    sys.exit(UNKNOWN)
+
+target = sys.argv[1]
+
+rust_machines = ['rc01a', 'rc01b', 'rc01c']
+loca = "qemu+ssh://{rust}/system"
+
+conns = [libvirt.openReadOnly(loca.format(rust=rust)) for rust in rust_machines]
+
+if None in conns:
+    print "Could not open at least one of %i libvirt connection." % len(conns)
+    sys.exit(UNKNOWN)
+
+for c in conns:
+    on = c.getHostname()
+
+    for ID in c.listDomainsID():
+        try:
+            d = c.lookupByID(ID)
+        except Exception, e:
+            continue
+        if target == d.name():
+            if d.isActive():
+                print "{script} OK - Found {target}-{on}".format(**locals())
+                sys.exit(OK)
+            else:
+                print "{script} CRIT - {target}-{on} borked".format(**locals())
+                sys.exit(CRIT)
+
+print "{script} CRIT - Did not find {target}".format(**locals())
+sys.exit(CRIT)

@@ -1,0 +1,17 @@
+# This file is used by systemd in order to start the bridges on boot.
+# The copy of this file that the system uses is in /lib/systend/system named bridge.service
+# A symlink of this file also exists in /etc/systemd/system
+# 
+# After being installed in these two locations, you have to run `systemctl enable bridge.service`
+# in order to have it start on boot
+
+[Unit]
+Description=Multicast-Unicast Bridges
+
+[Service]
+Type=simple
+ExecStart=/usr/local/QuickBridge/new/server.pl start
+RemainAfterExit=no
+
+[Install]
+WantedBy=multi-user.target

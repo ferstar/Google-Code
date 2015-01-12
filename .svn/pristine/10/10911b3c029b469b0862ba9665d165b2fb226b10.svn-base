@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [[ $# -ne 1 ]] ; then 
+   echo "check_for_proc <process name>"
+   exit 3
+fi
+
+CMD=$1
+
+NUM=`ps -C $CMD --no-headers | wc -l`
+if [[ $NUM -gt "0" ]] ; then
+    echo "PROC $CMD OK - (Looks like $NUM instances running)."
+    exit 0
+fi
+echo "PROC $CMD CRIT - No command by that name found."
+exit 2
+

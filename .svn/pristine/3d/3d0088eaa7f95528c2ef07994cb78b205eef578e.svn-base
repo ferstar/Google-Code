@@ -1,0 +1,18 @@
+#!/bin/bash
+
+num_down=$(/usr/local/bin/sinfo | grep down | wc -l)
+
+if [ "${num_down}" -eq "0" ] ; then
+        echo "CHECK_SLURM_NODES - OK - sinfo looks all good"
+        exit 0
+fi
+if [ "${num_down}" -eq "1" ] ; then
+        echo "CHECK_SLURM_NODES - WARN - at least one node down"
+        exit 1
+fi
+if [ "${num_down}" -gt "1" ] ; then
+        echo "CHECK_SLURM_NODES - CRIT - many nodes down"
+        exit 2
+fi
+echo "CHECK_SLURM_NODES - UNKNOWN"
+exit 3

@@ -1,0 +1,55 @@
+#!/bin/bash
+
+if [[ $# -ne 4 ]] ; then 
+   echo "check_procs_custom -w <warning> -c <critical>"
+   exit 3
+fi
+
+W=$2 # bad coding here -- i don't care.
+C=$4 # we don't actually check for -w and -c
+
+# all good after this
+# Number of unique users
+NUM_U=`who | awk ' { print $1 } ' | sort | uniq | wc -l`
+VAR="";
+BIGGEST=0;
+BIGGEST_U="(none)";
+
+excluded=(apache dbus ganglia haldaemon ldap nrpe nscd ntp postfix rpc rpcuser USER root nagios exim helper sge xfs avahi condor 68 UID sshd daemon slurm munge mysql)
+
+#for i in `who | awk ' { print $1 } ' | sort | uniq` ; do 
+for i in `ps -ef | awk ' { print $1 } ' | sort | uniq` ; do
+	exclude=1;
+	for excl in "${excluded[@]}"; do
+		if [ "$i" == "$excl" ] ; then
+			exclude=0;
+		fi
+	done
+	if [ $exclude -eq 0 ] ; then
+		continue
+	fi
+
+	j=`ps -ef | pgrep -u $i | grep -v condor | wc -l`
+
+	if [[ $j -gt $BIGGEST ]] ; then
+		BIGGEST=$j;
+		BIGGEST_U=$i;
+	fi;
+	VAR="$VAR:$i,$j";
+done;
+VAR=`echo $VAR | cut -b 2-`
+
+
+
+if [[ $BIGGEST -lt $W ]] ; then
+    echo "PROCS_CUSTOM OK - ($BIGGEST_U has the most procs: $BIGGEST)|$VAR"
+    exit 0
+fi
+if [[ $BIGGEST -lt $C ]]  ; then
+    echo "PROCS_CUSTOM WARN - ($BIGGEST_U has the most procs: $BIGGEST)|$VAR"
+    exit 1
+fi
+  
+echo "PROCS_CUSTOM CRIT - ($BIGGEST_U has the most procs: $BIGGEST)|$VAR"
+exit 2
+

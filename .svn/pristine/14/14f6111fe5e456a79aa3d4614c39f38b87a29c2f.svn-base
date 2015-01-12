@@ -1,0 +1,7 @@
+#!/bin/bash
+
+hostsloc=/root/nagios/hosts-lists
+location=/root/nagios/nrpe-distribution-jams
+
+echo "Removing the stuff I got from jay from my working directory 'nrpe-files'."
+rm -rf $location/nrpe-files/*

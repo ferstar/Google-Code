@@ -1,0 +1,39 @@
+#!/usr/bin/python
+import os, sys
+lines = []
+try:
+    if not os.path.exists('/dev/ipmi0'):
+        raise ValueError, "IPMI drivers not running."
+    CMD='/usr/bin/ipmitool sdr'
+    put, get = os.popen4(CMD)
+
+    lines = [[tok.strip() for tok in line.split('|')] \
+                              for line in get.readlines()]
+    bad_lines = []
+    for line in lines:
+        if 'Could not' in line[0]:
+            raise ValueError, "insufficient permissions to read /dev/ipmi0."
+        if 'ipmitool' in line[0] and "No such file or directory" in line[0]:
+            raise ValueError, "impitool not installed."
+        if line[-1] in ['ns', 'nr', 'nc']:
+            # no signal.. don't worry
+            continue
+	if 'FT' in line[0] and 'FM' in line[0] and 'PRSNT' in line[0]:
+            # just fan presence on solaris.. don't worry
+            continue
+        if line[-1] != 'ok':
+            bad_lines.append(line)
+except Exception, e:
+    print "IPMI Unknown:", e
+    for line in lines:
+        print " ".join(line)
+    sys.exit(3) # Unknown
+
+if len(bad_lines) != 0:
+    print "IPMI ALARM on %i sensors" % len(bad_lines)
+    for line in bad_lines:
+        print line
+    sys.exit(2) # Critical (no warnings here)
+print "IMPI all good." 
+sys.exit(0) # All good
+

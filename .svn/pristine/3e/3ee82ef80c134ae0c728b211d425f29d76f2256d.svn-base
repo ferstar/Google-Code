@@ -1,0 +1,48 @@
+<link rel="stylesheet" type="text/css" href="jquery.confirm/jquery.confirm.css" />
+<script src="jquery.confirm/jquery.confirm.js"></script>
+
+<script type="text/javascript">
+        $(document).ready(function() { 
+                $("#dialog").dialog({
+                        autoOpen: false,
+                        resizable: false,
+                        height:200,
+                        width:600,
+                        modal: true,
+                        close: function() {
+                                $('#opener').removeClass('ui-state-focus');
+                        },
+                        buttons: {
+                                "Delete selected items": function() {
+                                        //$.get('/del', $("#files").serialize());
+                                        document.deleteBox.submit();
+                                },
+                                Cancel: function() {
+                                        $( this ).dialog( "close" );
+                                }
+                        },
+                        open: function(event, ui) { $(".ui-dialog-titlebar-close").hide();},
+                 });
+                 $('form #confirm').click(function(e) {
+                        $('#dialog').dialog('open');
+                 });
+                 $('#opener').click(function () {
+                        $('.dialog').dialog('open');
+                        $(this).button('refresh');
+                        return false;
+                });
+                $('#confirm').button();
+                $('#confirm').click(function() {return false;});
+                return false;
+        });
+</script>
+
+
+<h2>Media Queue Management - <% queue %></h2>
+<p>
+        Use this page to manage files that appear in your media queue. 
+</p>
+<br/>
+<div class="div-table">
+        <% table %>
+</div>

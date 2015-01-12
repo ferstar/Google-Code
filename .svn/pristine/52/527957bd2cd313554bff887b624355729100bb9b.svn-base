@@ -1,0 +1,338 @@
+#!/usr/bin/env python
+
+# Check_Diag.py reports the status of key Grav / AccessGrid / GStreamer programs
+# to Nagios.
+# Copyright (C) 2010 Dan Merboth, Aabhas Garg, Ralph Bean
+
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+# Dan Merboth - dcm6293@rit.edu
+
+try:
+
+    # Requires Python WMI to run for the Windows support!
+
+    # Remember to rename WMI.py and WMI.pyc in C:\Python24\Lib\site-packages
+    # to PYWMI.py and PYWMI.pyc!
+
+    import sys
+    import platform
+    import getopt
+    from pydoc import help
+
+    __author__ = "Dan Merboth, Aabhas Garg, Ralph Bean"
+    __version__ = "$Revision 0.1$"
+    __date__ = "$Date: 2009/6/15 9:00:00 $"
+    __license__ = "Python"
+    
+# There was an issue importing libraries.
+except ImportError, e:
+    
+    #print "UNKNOWN 1:", e
+    sys.exit(3)
+
+# This method states the accepted command line arguments and their caveats.
+#
+# Usage Chart:
+#
+# 		Windows		Linux
+# ---------------------------------------
+# 	VIC	X		X
+# 	RAT	X		X
+# 	DVTS	X
+# 	GRAV			X
+# 	GST			X
+#	VNC	X		X
+
+def usage():
+    
+    print "Only specify ONE!"
+    print "-v (or --vic) for VIC"
+    print "-r (or --rat) for RAT"
+    print "-d (or --dvts) for DVTS (Windows only)"
+    print "-g (or --grav) for GRAV (Linux only)"
+    print "-s (or --gst) for gstreamer (Linux only)"
+    print "-n (or --vnc) for VNC (TightVNC for Windows, VNCViewer for Linux)"
+
+# This method handles process reporting for Windows platforms.
+def windows(process):
+    
+    try:
+        
+        import win32api
+        from win32com.client import GetObject
+        import pywmi
+	import wmi
+    
+    # There was an issue importing libraries for windows.
+    except ImportError, e:
+        
+        #print "UNKNOWN 2:", e
+        sys.exit(3)
+    
+    try:
+ 
+	check = 0
+	
+        wmi = wmi.WMI()
+        
+        for p in wmi.Win32_Process (name=process + ".exe"):
+            
+                #print ("Process matched!")
+                check = 1
+
+        results(process, check)
+        
+    except Exception, e:
+        #print "UNKNOWN 3:", e
+        sys.exit(3)
+
+# This method handles process reporting for Linux platforms. Only tested on Ubuntu.
+def linux(process):
+    
+    try:
+        
+        import os
+        import signal
+        
+    except ImportError, e:
+        
+        print "UNKNOWN 5:", e
+        sys.exit(3)
+        
+    try:
+        
+        check = 0
+        # Modified from code found at:
+        # http://www.echarcha.com/forum/showpost.php?p=351508&postcount=3
+        
+        for line in os.popen("ps xa"):
+            
+            fields = line.split()
+	    # The current selected process
+            proc = fields[4]
+	    # The current process' ID
+            pid = fields[0]
+
+	    # Special case for rat because it has two other programs, ratmedia and ratui.
+	    # -If rat is being looked for, look for ratmedia and ratui too.
+	    if (process == "rat-4.4.01"):
+		
+		print "Process is rat"
+		# Exit the loop
+		break
+	    
+	    # When we use gstreamer, we're going to save the process id
+	    # to a file. I'll get that file and use it to determine
+	    # if its running.
+	    # var/run/gst-launch.pid
+	    elif (process == "gstreamer"):
+
+		try:
+
+		    #Get the PID from var/run/gst-launch.pid
+		    file = open("/var/run/gst-launch.pid")
+
+		except IOError, e:
+
+		    #print e
+
+		    #The file doesn't exist or couldn't be opened.
+		    check = 3
+		    results(process,check)
+		
+		gstPID = file.read()
+
+		# Compare the PID to the PID list
+		#if (proc.find(gstPID))
+        #if 'gst' in proc or gstPID in proc
+        if any([target in proc for target in ['gst', gstPID]]):
+
+		    check = 1
+		    results(process, check)
+	    
+	    # Special case for VNCViewer because we also need to check the state
+	    # of the server.
+	    elif (process == "vncviewer"):
+
+		if proc.find(process) > 0:
+
+		    check = 1
+		    results(process, check)
+
+            # General case. If the process is found, check 1.
+	    # This is the case for DVTS, VIC, and GRAV.
+	    else:
+		
+		if proc.find(process) > 0:
+
+		    check = 1
+		    results(process, check)
+            
+        # Call results to give the answer to Nagios.
+        results(process, check)
+
+    except Exception, e:
+        
+        #print "UNKNOWN 6:", e
+        sys.exit(3)
+	
+# Both process reporting methods (Windows and Linux) report their results to here.
+def results(process, check):
+    
+    try:
+        
+	# if the requested process was found tell Nagios, if not, tell Nagios!
+	if (check == 0):
+            
+            # Nope, not running. Tell Nagios its not okay.
+            print ("CRITICAL: %s is not running." % process)
+            sys.exit(2)
+	    
+        elif check == 1:
+
+            # Yes, the process was found, tell Nagios its okay.
+            print ("OK: %s is running." % process)
+            sys.exit(0)
+
+	elif (check == 2):
+	    
+	    # Unknown, I don't know the status or something is wrong, like checking for grav on windows or checking for dvts on linux
+	    print ("UNKNOWN: %s might not work for the selected platform." % process)
+	    sys.exit(3)
+
+	elif (check == 3):
+
+	    # For GStreamer, the PID file couldn't be found.
+	    print ("CRITICAL: /var/run/gst-launch.pid wasn't found or couldn't be accessed.")
+	    sys.exit(2)
+        
+    except Exception, e:
+        
+        #print "UNKNOWN 4:", e
+        sys.exit(3)
+
+# This method determines what arguments were entered and what platform the computer is running.
+def main(argv):
+    
+    try:
+        
+        try:
+            
+	    # Get the list of arguments.
+            opts, args = getopt.getopt(
+                argv, "hvrdgsn", ["help", "vic", "rat", "dvts", "grav"])
+            
+	    # If no arguments were specified.
+            if len(args) == 1:
+                
+                raise getopt.GetoptError('(provide at least one)')
+        
+	# An incorrect argument was specified.        
+        except getopt.GetoptError:
+            
+            usage()
+            print "UNKNOWN 7: Incorrect args"
+            sys.exit(3)
+
+        for opt in args:
+            
+	    # Print the help options, which are the allowed command line arguments.
+	    # Both shorthand and longhand command line arguments are allowed,
+	    # but specify one at a time!
+            if opt in ("-h", "--help"):
+                
+                usage()
+                print "UNKNOWN 8: help arg specified"
+                sys.exit(3)
+                
+	    # Vic, AccessGrid's analog video software
+            if opt in ("-v", "--vic"):
+                
+                process = "vic"
+                
+	    # Rat, AccessGrid's audio software
+            if opt in ("-r", "--rat"):
+                
+                process = "rat-4.4.01"
+                
+	    # DVTS, AccessGrid's digital video software
+            if opt in ("-d", "--dvts"):
+                
+                process = "dvts"
+                
+	    # Grav, a proprietary video aggregator software.
+            if opt in ("-g", "--grav"):
+                
+                process = "grav"
+		
+	    # GStreamer, an open source multimedia framework.
+	    if opt in ("-s", "--gst"):
+	    
+		process = "gstreamer"
+
+	    # Virtual Network Computing, a graphic desktop sharing system.
+	    if opt in ("-n", "--vnc"):
+
+		process = "vnc"
+                
+        # Need to find the platform the user is running
+        if platform.system() == "Windows":
+            
+	    # Grav and Gstreamer do not have a Windows version, and if the
+	    # user selects VNC, we need to use the right VNC client.
+	    if (process == "grav" or process == "gstreamer"):
+	    
+		# Skip the check, go to the results, report imcompatibility error.
+		results(process, 2)
+	    
+	    # We need to set the check to the correct VNC for Windows.
+	    # In our case that's TightVNC.
+	    elif (process == "vnc"):
+
+		# Set the process equal to TightVNC.
+		process = "tightvnc"
+
+	    # Go to the windows version of the check, the program passes.
+	    windows(process)
+            
+        else:
+            
+	    # DVTS does not have a Linux version, and if the user selects VNC,
+	    # we need to use the right VNC client.
+	    if (process == "dvts"):
+		
+		# Skip the check, go to the results, report incompatibility error.
+		results(process, 2)
+	    
+	    # We need to set the check to the correct VNC for Linux.
+	    # In our case that's VNCViewer.
+	    elif (process == "vnc"):
+
+		# Set the process equal to VNCViewer.
+		process = "vncviewer"
+	    
+	    # Go to the linux version of the check, the program passes.
+	    linux(process)
+
+    except Exception, e:
+        
+        #print "UNKNOWN 9:", e
+        sys.exit(3)
+
+if __name__ == "__main__":
+
+    # Just run the thing with the arguments you were given!
+    main(sys.argv)
